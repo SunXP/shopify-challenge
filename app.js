@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
     res.send("Welcome to the fruit store");
 });
 
+// GET ALL PRODUCTS
 app.get('/products', (req, res) => {
     let product_list = [];
     products.forEach(product => {
@@ -24,17 +25,38 @@ app.get('/products', (req, res) => {
     res.send(product_list);
 })
 
-app.get('/products/apple', (req, res) => {
-    res.send(products[0]);
+
+// GET PRODUCT INFO
+app.get('/products/:product', (req, res) => {
+    const product = products.find(p => p.title === req.params.product);
+    if (!product) {
+        return res.status(404).send("404: Product does not exist");
+    }
+    res.send(product);
 });
 
-app.get('/products/orange', (req, res) => {
-    res.send(products[1]);
+// PURCHASE PRODUCTS
+app.put('/products/:product/buy', (req, res) => {
+    const product = products.find(p => p.title === req.params.product);
+    if (!product) {
+        return res.status(404).send("404: Product does not exist");
+    }
+    if (product.inventory_count === 0){
+        return res.status(400).send(`There is not more of this product: ${product.name}`);
+    }
+    if (product.inventory_count < req.params.count){
+        return res.status(400).send(`There is only ${inventory_count} of this product: ${product.title}`);
+    }
+    product.inventory_count--
+    res.send(product);
 });
 
-app.get('/products/banana', (req, res) => {
-    res.send(products[2]);
-});
+// function validateCount(product) {
+//     const schema = {
+//         inventory_count: Joi.number().required()
+//     };
+//     return Joi.validate(product, schema);
+// }
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
