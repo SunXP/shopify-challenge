@@ -1,5 +1,4 @@
 const express = require('express');
-const Joi = require('joi');
 const app = express();
 const uuidv1 = require('uuid/v1');
 
@@ -62,11 +61,13 @@ app.post('/products/:product/addToCart', (req, res) => {
             return res.status(400).send("400: You cannot add of more this product.");
         }
         item.count++;
+        cart.total = calculateTotal(cart);
         res.send(cart);
     }
     else {
         const item = addToCart(product);
         cart.items.push(item);
+        cart.total = calculateTotal(cart);
         carts.push(cart);
         res.send(cart);
     }
@@ -78,13 +79,34 @@ app.post('/cart', (req, res) => {
     if (!cart) {
         return res.status(404).send("404: Cart does not exist");
     }
-    res.send(cart.items);
+    res.send(cart);
 })
+
+// MAKE PURCHASE FROM CART
+// request body: cart id
+app.post('/cart/buy', (req, res) => {
+    const cart = carts.find(c => c.id === req.body.id);
+    if (!cart) {
+        return res.status(404).send("404: Cart does not exist");
+    }
+    if (!cart.items.length) {
+        res.send("Your cart is empty. Please add something to cart.")
+    }
+    products.forEach(product => {
+        const item = cart.items.find(item => item.title === product.title);
+        if (item) {
+            product.inventory_count -= item.count;
+        }
+    });
+
+    res.send(cart);
+    });
 
 // CART
 function setUpCart() {
     const cart = {};
     cart.id = uuidv1();
+    cart.total = 0;
     cart.items = [];
     return cart;
 };
@@ -97,13 +119,13 @@ function addToCart(product) {
     return item;
 }
 
-
-// function validateCount(product) {
-//     const schema = {
-//         inventory_count: Joi.number().required()
-//     };
-//     return Joi.validate(product, schema);
-// }
+function calculateTotal(cart) {
+    let total = 0;
+    cart.items.forEach(item => {
+        total += item.price * item.count;
+    });
+    return total;
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
