@@ -27,47 +27,47 @@ Node.js needs to be installed. `v10.14.2` was used.
 
 # Documentation
 
-GET `/`
+### GET `/`
 
 Welcomes users to the fruit store!
 
 ---
 
-POST `/products`
+### POST `/products`
 Request body: `"flag": true|false`
 
 Takes as argument a boolean flag whether the user wants to return products with available inventory or not.
-
 Returns all the products of the store with all their properties.
 
 ---
 
-GET `/products/:product`
+### GET `/products/:product`
 
 Returns the properties of the product specified.
-example: `/products/apple`
+
+*example:* `/products/apple`
 
 ---
 
-POST `/products/:product/addToCart`
+### POST `/products/:product/addToCart`
 Request body: `"id": UUID GIVEN TO USER`
 
 Adds a product to a user's cart. If a UUID is not provided in the request body, a new one is generated for the user. 
 
-example: `/products/apple/addToCart`
+*example:* `/products/apple/addToCart`
 
 **NOTE FOR DEMO:** Once given an id, pass it in the request body to add more products to the cart, check its contents, or make a purchase.
 
 ---
 
-POST `/cart`
+### POST `/cart`
 Request body: `"id": UUID GIVEN TO USER`
 
 Returns the total and contents of the user's cart.
 
 ---
 
-POST `cart/buy`
+### POST `cart/buy`
 Request body: `"id": UUID GIVEN TO USER`
 
 Completes a purchase of the contents of the cart and updates the inventory count of the products in the store. After the transaction, the cart's content is deleted.
