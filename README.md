@@ -45,6 +45,7 @@ Returns all the products of the store with all their properties.
 GET `/products/:product`
 
 Returns the properties of the product specified.
+example: `/products/apple`
 
 ---
 
@@ -52,6 +53,8 @@ POST `/products/:product/addToCart`
 Request body: `"id": UUID GIVEN TO USER`
 
 Adds a product to a user's cart. If a UUID is not provided in the request body, a new one is generated for the user. 
+
+example: `/products/apple/addToCart`
 
 **NOTE FOR DEMO:** Once given an id, pass it in the request body to add more products to the cart, check its contents, or make a purchase.
 
