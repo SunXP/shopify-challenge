@@ -8,7 +8,7 @@ let carts = [];
 let products = [
     {title: "apple", price: 1, inventory_count: 3},
     {title: "orange", price: 2, inventory_count: 5},
-    {title: "banana", price: 1.5, inventory_count: 2},
+    {title: "banana", price: 1.5, inventory_count: 1},
 ];
 
 app.get('/', (req, res) => {
@@ -16,14 +16,19 @@ app.get('/', (req, res) => {
 });
 
 // GET ALL PRODUCTS
-app.get('/products', (req, res) => {
-    let product_list = [];
-    products.forEach(product => {
-        if (product.inventory_count > 1){
-            product_list.push(product);
-        }
-    });
-    res.send(product_list);
+// request body: boolean flag for inventory < 1
+app.post('/products', (req, res) => {
+    if (req.body.flag) {
+        let product_list = [];
+        products.forEach(product => {
+            if (product.inventory_count > 1){
+                product_list.push(product);
+            }
+        });
+        res.send(product_list);
+    }
+    res.send(products);
+    
 })
 
 
@@ -36,7 +41,7 @@ app.get('/products/:product', (req, res) => {
     res.send(product);
 });
 
-// PURCHASE PRODUCT
+// ADD TO CART
 // request body: cart id
 app.post('/products/:product/addToCart', (req, res) => {
     // find existing cart or create a new one
@@ -85,7 +90,7 @@ app.post('/cart', (req, res) => {
 // MAKE PURCHASE FROM CART
 // request body: cart id
 app.post('/cart/buy', (req, res) => {
-    const cart = carts.find(c => c.id === req.body.id);
+    let cart = carts.find(c => c.id === req.body.id);
     if (!cart) {
         return res.status(404).send("404: Cart does not exist");
     }
@@ -98,7 +103,7 @@ app.post('/cart/buy', (req, res) => {
             product.inventory_count -= item.count;
         }
     });
-
+    cart = setUpCart();
     res.send(cart);
     });
 
